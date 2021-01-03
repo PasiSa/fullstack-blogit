@@ -21,7 +21,6 @@ test('notes are returned as json', async () => {
 
 test('there are correct number of blogs', async () => {
   const response = await api.get('/api/blogs')
-  //console.log(response.body)
   expect(response.body).toHaveLength(manyBlogs.length)
 })
 
@@ -31,6 +30,26 @@ test('id field exists', async () => {
   response.body.forEach((i) => {
     expect(i.id).toBeDefined()
   })
+})
+
+test('blog can be added', async() => {
+  const newBlog = {
+    title: 'yykaakoo',
+    author: 'Tuure Tuppurainen',
+    url: 'http://jshdjs/shh',
+    likes: 3
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+  
+  const resp = await api.get('/api/blogs')
+  const titles = resp.body.map(r => r.title)
+
+  expect(resp.body).toHaveLength(manyBlogs.length + 1)
+  expect(titles).toContain('yykaakoo')
 })
 
 afterAll(() => {
