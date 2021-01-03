@@ -19,10 +19,18 @@ test('notes are returned as json', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
-test('there are two blogs', async () => {
+test('there are correct number of blogs', async () => {
+  const response = await api.get('/api/blogs')
+  //console.log(response.body)
+  expect(response.body).toHaveLength(manyBlogs.length)
+})
+
+test('id field exists', async () => {
   const response = await api.get('/api/blogs')
 
-  expect(response.body).toHaveLength(manyBlogs.length)
+  response.body.forEach((i) => {
+    expect(i.id).toBeDefined()
+  })
 })
 
 afterAll(() => {
