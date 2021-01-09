@@ -52,6 +52,45 @@ test('blog can be added', async() => {
   expect(titles).toContain('yykaakoo')
 })
 
+test('handle missing likes field', async() => {
+  const newBlog = {
+    title: 'Maalari',
+    author: 'Kerttu Keppurainen',
+    url: 'http://adihf/index',
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+  
+  const resp = await api.get('/api/blogs')
+  const added = resp.body.find(b => b.title === 'Maalari')
+  expect(added.likes).toBeDefined()
+})
+
+test('should fail if title and url do not exist', async() => {
+  const new1 = {
+    author: 'Tuure Tuppurainen',
+    url: 'http://jshdjs/shh',
+    likes: 3
+  }
+  await api
+    .post('/api/blogs')
+    .send(new1)
+    .expect(400)
+  
+  const new2 = {
+    title: 'Maalari',
+    url: 'http://adihf/index',
+    likes: 1
+  }
+  await api
+    .post('/api/blogs')
+    .send(new2)
+    .expect(400)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })

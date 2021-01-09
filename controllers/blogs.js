@@ -7,10 +7,14 @@ notesRouter.get('/', async (request, response) => {
 })
 
 notesRouter.post('/', async (request, response) => {
-  const blog = new Blog(request.body)
-
-  const saved = await blog.save()
-  response.status(201).json(saved.toJSON())
+  if (!request.body.title || !request.body.author) {
+    response.status(400).end()
+  } else {
+    const req = { ...request.body, ...(request.body.likes || { likes: 0})}
+    const blog = new Blog(req)
+    const saved = await blog.save()
+    response.status(201).json(saved.toJSON())
+  }
 })
 
 module.exports = notesRouter
